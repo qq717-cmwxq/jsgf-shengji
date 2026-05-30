@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>幻梦酒馆 · 升级版</title>
+    <title>幻梦酒馆 · 萌点标签版</title>
     <style>
         :root {
             --pink: #FFD1DC; --blue: #BDE0FE;
             --dark-pink: #FF91AF; --dark-blue: #A2D2FF;
+            --tag-bg: #f0e6ff;
         }
 
         body {
@@ -43,7 +44,6 @@
         .char-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--pink); }
         .char-name { margin-top: 10px; font-weight: bold; display: block; overflow: hidden; text-overflow: ellipsis; }
 
-        /* 角色卡片选中高亮（随机选中效果） */
         .char-card.selected-highlight {
             box-shadow: 0 0 0 4px var(--dark-pink), 0 0 15px rgba(255, 145, 175, 0.5);
             transform: scale(1.03);
@@ -51,8 +51,64 @@
             background: #fff9fa;
         }
 
-        /* 详情记录页 */
+        /* 详情页 */
         .detail-view { background: rgba(255,255,255,0.9); border-radius: 20px; padding: 20px; min-height: 400px; }
+        
+        /* 头像 + 标签云 */
+        .header-zone {
+            text-align: center; margin-bottom: 20px;
+        }
+        .avatar-with-tags {
+            display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px;
+            margin-bottom: 8px;
+        }
+        .avatar-wrapper { position: relative; display: inline-block; flex-shrink: 0; }
+        .avatar-wrapper .change-avatar-btn {
+            position: absolute; bottom: 0; right: 0; background: rgba(255,255,255,0.8);
+            border-radius: 30px; padding: 2px 8px; font-size: 12px; border: 1px solid #ddd;
+            cursor: pointer; color: #555;
+        }
+        .avatar-wrapper input[type="file"] { display: none; }
+
+        .tag-cloud {
+            display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+            max-width: 300px;
+        }
+        .tag-item {
+            background: var(--tag-bg); border-radius: 30px; padding: 4px 14px;
+            font-size: 13px; color: #6a4e8a; border: 1px solid #d6c4e8;
+            display: inline-flex; align-items: center; gap: 4px;
+        }
+        .tag-item .del-tag {
+            color: #b00; cursor: pointer; font-weight: bold; margin-left: 2px;
+            font-size: 14px; line-height: 1;
+        }
+
+        .tag-input-area {
+            margin: 10px 0; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center;
+        }
+        .tag-input-area input {
+            width: 120px; padding: 6px 10px; border-radius: 30px; border: 1px solid #ddd;
+        }
+        .tag-input-area button {
+            background: var(--dark-blue); border: none; border-radius: 30px; padding: 6px 16px; color: white; cursor: pointer;
+        }
+
+        /* 萌点专区 (短记录) */
+        .moe-section {
+            background: #f9f9f9; border-radius: 15px; padding: 15px; margin: 20px 0;
+            border: 1px dashed var(--dark-pink);
+        }
+        .moe-section h4 { margin: 0 0 10px 0; color: var(--dark-pink); display: flex; align-items: center; gap: 8px; }
+        .moe-entry {
+            background: white; border-radius: 12px; padding: 10px 14px; margin-bottom: 8px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-left: 4px solid var(--dark-blue);
+        }
+        .moe-entry .moe-text { flex:1; word-break: break-word; }
+        .moe-entry .del-moe { color: #ff4d4f; cursor: pointer; font-size: 12px; margin-left: 10px; }
+
+        /* 长记录卡片 */
         .thought-card {
             background: white; margin-top: 15px; padding: 15px; border-radius: 12px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 4px solid var(--dark-pink);
@@ -62,7 +118,7 @@
         .display-img:hover { opacity: 0.8; }
         .time-tag { font-size: 12px; color: #bbb; display: block; margin-bottom: 5px; }
 
-        /* 图片放大弹窗 (lightbox) */
+        /* lightbox */
         .lightbox {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center;
@@ -70,7 +126,6 @@
         }
         .lightbox img { max-width: 90%; max-height: 90%; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
 
-        /* 弹窗 */
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 200;
@@ -80,22 +135,12 @@
         .hidden { display: none !important; }
         input[type="text"], textarea { width: 100%; box-sizing: border-box; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; }
         .del-text { color: #ff4d4f; cursor: pointer; font-size: 12px; text-decoration: underline; margin-top: 10px; display: inline-block; }
-        .action-link { color: var(--dark-blue); cursor: pointer; font-size: 12px; text-decoration: underline; margin-left: 10px; }
-
-        /* 头像换装小按钮 */
-        .avatar-wrapper { position: relative; display: inline-block; }
-        .avatar-wrapper .change-avatar-btn {
-            position: absolute; bottom: 0; right: 0; background: rgba(255,255,255,0.8);
-            border-radius: 30px; padding: 2px 8px; font-size: 12px; border: 1px solid #ddd;
-            cursor: pointer; color: #555;
-        }
-        .avatar-wrapper input[type="file"] { display: none; }
     </style>
 </head>
 <body>
 
 <header>
-    <h2 style="margin:0; color:#666;">🌸 幻梦酒馆管理</h2>
+    <h2 style="margin:0; color:#666;">🌸 幻梦酒馆 · 萌点标签</h2>
     <button class="btn btn-main" onclick="openModal()">+ 新建角色</button>
     <button class="btn btn-sub" onclick="randomPick()">🎲 随机选一张</button>
 </header>
@@ -108,9 +153,37 @@
     <div id="detailView" class="hidden">
         <button class="btn" onclick="goBack()" style="background:#eee;">← 返回列表</button>
         <div class="detail-view">
-            <div id="detailHeader" style="text-align: center;"></div>
+            <!-- 头部：头像 + 标签云 -->
+            <div class="header-zone">
+                <div class="avatar-with-tags">
+                    <div class="avatar-wrapper">
+                        <img id="detailAvatar" src="" class="char-avatar" style="width:100px; height:100px;" alt="头像">
+                        <label class="change-avatar-btn" onclick="document.getElementById('avatarInput').click()">换头像</label>
+                        <input type="file" id="avatarInput" accept="image/*" onchange="changeAvatar(event)">
+                    </div>
+                    <div id="tagCloud" class="tag-cloud"></div>
+                </div>
+                <h2 id="detailName" style="margin:8px 0 4px;"></h2>
+                <!-- 标签输入 -->
+                <div class="tag-input-area">
+                    <input type="text" id="tagInput" placeholder="添加标签 (回车)" onkeydown="if(event.key==='Enter') addTag()">
+                    <button onclick="addTag()">+ 标签</button>
+                </div>
+            </div>
+
+            <!-- 萌点专区 (短记录) -->
+            <div class="moe-section">
+                <h4>✨ 萌点 · 小档案</h4>
+                <div id="moeList"></div>
+                <div style="display:flex; gap:6px; margin-top:6px;">
+                    <input type="text" id="moeInput" placeholder="记录一个小萌点..." style="flex:1;">
+                    <button class="btn btn-sub" onclick="addMoe()" style="padding:6px 16px;">添加</button>
+                </div>
+            </div>
+
+            <!-- 长记录感想 -->
             <div style="background:#f9f9f9; padding:15px; border-radius:15px; margin:20px 0;">
-                <h4 style="margin:0 0 10px 0;">记录新感想</h4>
+                <h4 style="margin:0 0 10px 0;">📝 长记录本</h4>
                 <textarea id="inpText" placeholder="说点什么..."></textarea>
                 上传图片: <input type="file" id="inpFile" accept="image/*" onchange="previewImage(this)">
                 <div id="previewContainer" style="margin-top:10px; display:none;">
@@ -140,36 +213,38 @@
     </div>
 </div>
 
-<!-- 图片放大弹窗 (lightbox) -->
+<!-- lightbox -->
 <div id="lightbox" class="lightbox" onclick="closeLightbox()">
     <img id="lightboxImg" src="" alt="点击关闭">
 </div>
 
 <script>
-    /** 数据库核心逻辑 (IndexedDB) **/
+    /** IndexedDB **/
     let db;
     const request = indexedDB.open("TavernData", 1);
-    request.onupgradeneeded = e => e.target.result.createObjectStore("chars", { keyPath: "id" });
+    request.onupgradeneeded = e => {
+        const store = e.target.result.createObjectStore("chars", { keyPath: "id" });
+        // 确保新字段存在：tags, moes
+    };
     request.onsuccess = e => { db = e.target.result; renderHome(); };
 
-    // 辅助函数：将图片文件转为DataURL
     const fileToData = file => new Promise(res => {
         const r = new FileReader();
         r.onload = e => res(e.target.result);
         r.readAsDataURL(file);
     });
 
-    /** 页面功能 **/
     let curId = null;
-    let currentImageData = null; // 存储当前上传的图片数据
+    let currentImageData = null;
 
+    /** 角色 CRUD **/
     async function addChar() {
         const name = document.getElementById('newName').value;
         const file = document.getElementById('newAvatar').files[0];
         if(!name) return alert("请填写名字");
 
         const avatar = file ? await fileToData(file) : "";
-        const newChar = { id: Date.now(), name, avatar, thoughts: [] };
+        const newChar = { id: Date.now(), name, avatar, thoughts: [], tags: [], moes: [] };
 
         const tx = db.transaction("chars", "readwrite");
         tx.objectStore("chars").add(newChar);
@@ -212,20 +287,108 @@
             const char = e.target.result;
             document.getElementById('homeView').classList.add('hidden');
             document.getElementById('detailView').classList.remove('hidden');
-            // 头部显示头像 + 换头像功能
-            document.getElementById('detailHeader').innerHTML = `
-                <div class="avatar-wrapper">
-                    <img src="${char.avatar || 'https://via.placeholder.com/80'}" class="char-avatar" style="width:100px; height:100px;" alt="${char.name}">
-                    <label class="change-avatar-btn" onclick="document.getElementById('avatarInput').click()">换头像</label>
-                    <input type="file" id="avatarInput" accept="image/*" onchange="changeAvatar(event, ${char.id})">
-                </div>
-                <h2>${char.name}</h2>
-            `;
-            renderThoughts(char.thoughts);
+            document.getElementById('detailAvatar').src = char.avatar || 'https://via.placeholder.com/80';
+            document.getElementById('detailName').textContent = char.name;
+            // 渲染标签
+            renderTags(char.tags || []);
+            // 渲染萌点
+            renderMoes(char.moes || []);
+            // 渲染长记录
+            renderThoughts(char.thoughts || []);
+            // 绑定换头像
+            document.getElementById('avatarInput').onchange = (ev) => changeAvatar(ev, char.id);
         };
     }
 
-    /** 换头像功能 **/
+    /** 标签系统 **/
+    function renderTags(tags) {
+        const container = document.getElementById('tagCloud');
+        if (!tags || tags.length === 0) {
+            container.innerHTML = '<span style="color:#bbb; font-size:13px;">暂无标签</span>';
+            return;
+        }
+        container.innerHTML = tags.map(t => 
+            `<span class="tag-item">${t} <span class="del-tag" onclick="deleteTag('${t}')">×</span></span>`
+        ).join('');
+    }
+
+    async function addTag() {
+        const input = document.getElementById('tagInput');
+        const val = input.value.trim();
+        if (!val) return;
+        const tx = db.transaction("chars", "readwrite");
+        const store = tx.objectStore("chars");
+        store.get(curId).onsuccess = e => {
+            const char = e.target.result;
+            if (!char.tags) char.tags = [];
+            if (char.tags.includes(val)) { alert('标签已存在'); return; }
+            char.tags.push(val);
+            store.put(char);
+            tx.oncomplete = () => {
+                input.value = '';
+                renderTags(char.tags);
+            };
+        };
+    }
+
+    async function deleteTag(tag) {
+        if (!confirm(`移除标签「${tag}」？`)) return;
+        const tx = db.transaction("chars", "readwrite");
+        const store = tx.objectStore("chars");
+        store.get(curId).onsuccess = e => {
+            const char = e.target.result;
+            char.tags = (char.tags || []).filter(t => t !== tag);
+            store.put(char);
+            tx.oncomplete = () => renderTags(char.tags);
+        };
+    }
+
+    /** 萌点系统 (短记录) **/
+    function renderMoes(moes) {
+        const container = document.getElementById('moeList');
+        if (!moes || moes.length === 0) {
+            container.innerHTML = '<p style="color:#ccc; font-size:13px; margin:6px 0;">还没有萌点记录 ✨</p>';
+            return;
+        }
+        container.innerHTML = moes.map((m, idx) => `
+            <div class="moe-entry">
+                <span class="moe-text">${m}</span>
+                <span class="del-moe" onclick="deleteMoe(${idx})">删除</span>
+            </div>
+        `).join('');
+    }
+
+    async function addMoe() {
+        const input = document.getElementById('moeInput');
+        const val = input.value.trim();
+        if (!val) return;
+        const tx = db.transaction("chars", "readwrite");
+        const store = tx.objectStore("chars");
+        store.get(curId).onsuccess = e => {
+            const char = e.target.result;
+            if (!char.moes) char.moes = [];
+            char.moes.push(val);
+            store.put(char);
+            tx.oncomplete = () => {
+                input.value = '';
+                renderMoes(char.moes);
+            };
+        };
+    }
+
+    async function deleteMoe(index) {
+        if (!confirm('删除这条萌点记录？')) return;
+        const tx = db.transaction("chars", "readwrite");
+        const store = tx.objectStore("chars");
+        store.get(curId).onsuccess = e => {
+            const char = e.target.result;
+            char.moes = (char.moes || []).filter((_, i) => i !== index);
+            store.put(char);
+            tx.oncomplete = () => renderMoes(char.moes);
+        };
+    }
+
+    /** 长记录系统 **/
     async function changeAvatar(event, charId) {
         const file = event.target.files[0];
         if (!file) return;
@@ -237,27 +400,19 @@
             char.avatar = dataUrl;
             store.put(char);
             tx.oncomplete = () => {
-                // 刷新详情头部和首页列表
                 showDetail(charId);
                 renderHome();
-                // 清空input
                 document.getElementById('avatarInput').value = '';
             };
         };
     }
 
-    /** 图片放大 (lightbox) **/
     function openLightbox(src) {
-        const lb = document.getElementById('lightbox');
-        const img = document.getElementById('lightboxImg');
-        img.src = src;
-        lb.style.display = 'flex';
+        document.getElementById('lightboxImg').src = src;
+        document.getElementById('lightbox').style.display = 'flex';
     }
-    function closeLightbox() {
-        document.getElementById('lightbox').style.display = 'none';
-    }
+    function closeLightbox() { document.getElementById('lightbox').style.display = 'none'; }
 
-    // 预览上传的图片（新建角色时）
     function previewAvatar(input) {
         const container = document.getElementById('avatarPreviewContainer');
         const img = document.getElementById('avatarPreviewImg');
@@ -268,12 +423,9 @@
                 container.style.display = 'block';
             };
             reader.readAsDataURL(input.files[0]);
-        } else {
-            container.style.display = 'none';
-        }
+        } else { container.style.display = 'none'; }
     }
 
-    // 预览上传的图片（保存感想时）
     function previewImage(input) {
         const container = document.getElementById('previewContainer');
         const img = document.getElementById('previewImg');
@@ -282,7 +434,7 @@
             reader.onload = function(e) {
                 img.src = e.target.result;
                 container.style.display = 'block';
-                currentImageData = e.target.result; // 保存图片数据
+                currentImageData = e.target.result;
             };
             reader.readAsDataURL(input.files[0]);
         } else {
@@ -291,7 +443,6 @@
         }
     }
 
-    // 移除已上传的图片
     function clearImage() {
         document.getElementById('inpFile').value = '';
         document.getElementById('previewContainer').style.display = 'none';
@@ -302,14 +453,13 @@
     async function saveThought() {
         const text = document.getElementById('inpText').value;
         const imgData = currentImageData || "";
-        
         if(!text && !imgData) return;
 
         const tx = db.transaction("chars", "readwrite");
         const store = tx.objectStore("chars");
-        
         store.get(curId).onsuccess = e => {
             const char = e.target.result;
+            if (!char.thoughts) char.thoughts = [];
             char.thoughts.unshift({
                 tid: Date.now(),
                 text: text,
@@ -330,13 +480,12 @@
 
     function renderThoughts(thoughts) {
         const list = document.getElementById('thoughtList');
-        list.innerHTML = thoughts.length ? "" : "<p style='text-align:center;color:#ccc;'>暂无记录</p>";
+        list.innerHTML = thoughts.length ? "" : "<p style='text-align:center;color:#ccc;'>暂无长记录</p>";
         thoughts.forEach(t => {
             const div = document.createElement('div');
             div.className = 'thought-card';
             let imgHtml = '';
             if (t.img && t.img.length > 0) {
-                // 添加点击放大
                 imgHtml = `<img src="${t.img}" class="display-img" alt="上传图片" onclick="openLightbox('${t.img}')">`;
             }
             div.innerHTML = `
@@ -350,12 +499,12 @@
     }
 
     function delThought(tid) {
-        if(!confirm("确定删除这条记录？")) return;
+        if(!confirm("确定删除这条长记录？")) return;
         const tx = db.transaction("chars", "readwrite");
         const store = tx.objectStore("chars");
         store.get(curId).onsuccess = e => {
             const char = e.target.result;
-            char.thoughts = char.thoughts.filter(x => x.tid !== tid);
+            char.thoughts = (char.thoughts || []).filter(x => x.tid !== tid);
             store.put(char);
             tx.oncomplete = () => renderThoughts(char.thoughts);
         };
@@ -369,31 +518,22 @@
         tx.oncomplete = () => renderHome();
     }
 
-    /** 随机选中：只做高亮效果，不自动跳转编辑 **/
     function randomPick() {
         const cards = document.querySelectorAll('.char-card');
         if(cards.length < 1) return alert("酒馆里还没人");
-        
-        // 清除所有已有的高亮
         cards.forEach(c => c.classList.remove('selected-highlight'));
-        
         let i = 0;
         let selectedIndex = 0;
         const timer = setInterval(() => {
             cards.forEach(c => c.classList.remove('selected-highlight'));
-            
             const r = Math.floor(Math.random() * cards.length);
             selectedIndex = r;
             cards[r].classList.add('selected-highlight');
-            
             if(i++ > 10) {
                 clearInterval(timer);
-                // 动画结束后保留高亮，不自动点击跳转
                 setTimeout(() => {
-                    // 闪烁停止，保持高亮
                     cards.forEach(c => c.classList.remove('selected-highlight'));
                     cards[selectedIndex].classList.add('selected-highlight');
-                    // 提示用户
                     alert(`✨ 命运选中了：「${cards[selectedIndex].querySelector('.char-name')?.innerText || '角色'}」`);
                 }, 200);
             }
@@ -405,7 +545,6 @@
     function goBack() { 
         document.getElementById('homeView').classList.remove('hidden'); 
         document.getElementById('detailView').classList.add('hidden');
-        // 回到列表时清除随机高亮
         document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected-highlight'));
     }
 </script>
