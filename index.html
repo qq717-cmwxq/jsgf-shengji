@@ -102,7 +102,7 @@
                 <textarea id="inpText" placeholder="说点什么..."></textarea>
                 上传图片: <input type="file" id="inpFile" accept="image/*" onchange="previewImage(this)">
                 <div id="previewContainer" style="margin-top:10px; display:none;">
-                    < img id="previewImg" style="max-width:100%; max-height:200px; border-radius:8px;">
+                    <img id="previewImg" style="max-width:100%; max-height:200px; border-radius:8px;">
                     <button onclick="clearImage()" style="background:#ff4d4f; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; margin-top:5px;">移除</button>
                 </div>
                 <button class="btn btn-main" style="width:100%; margin-top:10px;" onclick="saveThought()">保存到记录本</button>
@@ -119,7 +119,7 @@
         <input type="text" id="newName" placeholder="角色名字...">
         上传头像: <input type="file" id="newAvatar" accept="image/*" onchange="previewAvatar(this)">
         <div id="avatarPreviewContainer" style="margin-top:10px; display:none;">
-            < img id="avatarPreviewImg" style="max-width:100%; max-height:200px; border-radius:8px;">
+            <img id="avatarPreviewImg" style="max-width:100%; max-height:200px; border-radius:8px;">
         </div>
         <div style="margin-top:20px; display:flex; gap:10px;">
             <button class="btn btn-main" style="flex:1" onclick="addChar()">确定</button>
@@ -130,7 +130,7 @@
 
 <!-- 图片放大显示层 -->
 <div id="lightbox" onclick="this.style.display='none'">
-    < img id="lightboxImg" src="">
+    <img id="lightboxImg" src="">
 </div>
 
 <script>
@@ -175,7 +175,7 @@
                 div.className = 'char-card';
                 div.id = 'card-' + char.id;
                 div.innerHTML = `
-                    < img src="${char.avatar || 'https://via.placeholder.com/80'}" class="char-avatar" alt="${char.name}">
+                    <img src="${char.avatar || 'https://via.placeholder.com/80'}" class="char-avatar" alt="${char.name}">
                     <span class="char-name">${char.name}</span>
                     <span class="del-text" onclick="deleteChar(event, ${char.id})">删除</span>
                 `;
@@ -197,7 +197,7 @@
             document.getElementById('homeView').classList.add('hidden');
             document.getElementById('detailView').classList.remove('hidden');
             document.getElementById('detailHeader').innerHTML = `
-                < img src="${char.avatar || 'https://via.placeholder.com/80'}" class="char-avatar" 
+                <img src="${char.avatar || 'https://via.placeholder.com/80'}" class="char-avatar" 
                      style="width:100px; height:100px; cursor:pointer;" title="点击更换头像"
                      onclick="document.getElementById('changeAvatarInput').click()">
                 <h2>${char.name}</h2>
@@ -274,11 +274,11 @@
 
     function renderThoughts(thoughts) {
         const list = document.getElementById('thoughtList');
-        list.innerHTML = thoughts.length ? "" : "<p style='text-align:center;color:#ccc;'>暂无记录</p >";
+        list.innerHTML = thoughts.length ? "" : "<p style='text-align:center;color:#ccc;'>暂无记录</p>";
         thoughts.forEach(t => {
             const div = document.createElement('div');
             div.className = 'thought-card';
-            let imgHtml = t.img ? `< img src="${t.img}" class="display-img" onclick="zoomImg('${t.img}')">` : '';
+            let imgHtml = t.img ? `<img src="${t.img}" class="display-img" onclick="zoomImg('${t.img}')">` : '';
             div.innerHTML = `
                 <small class="time-tag">${t.time}</small>
                 <div style="white-space:pre-wrap; word-break:break-all;">${t.text}</div>
