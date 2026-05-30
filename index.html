@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>幻梦酒馆 · 双模式图片</title>
+    <title>幻梦酒馆 · URL上传版</title>
     <style>
         :root {
             --pink: #FFD1DC; --blue: #BDE0FE;
             --dark-pink: #FF91AF; --dark-blue: #A2D2FF;
-            --tag-bg: #f0e6ff;
         }
 
         body {
@@ -38,139 +37,43 @@
         .char-card {
             background: white; border-radius: 15px; padding: 15px; text-align: center;
             cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05); position: relative;
-            transition: 0.2s;
         }
         .char-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--pink); }
         .char-name { margin-top: 10px; font-weight: bold; display: block; overflow: hidden; text-overflow: ellipsis; }
 
         .detail-view { background: rgba(255,255,255,0.9); border-radius: 20px; padding: 20px; min-height: 400px; }
-        
-        .header-zone { text-align: center; margin-bottom: 20px; }
-        
-        .avatar-wrapper { position: relative; display: inline-block; }
-        .avatar-wrapper .change-avatar-btn {
-            position: absolute; bottom: 0; right: 0; background: rgba(255,255,255,0.8);
-            border-radius: 30px; padding: 2px 8px; font-size: 12px; border: 1px solid #ddd;
-            cursor: pointer; color: #555;
-        }
-        .avatar-wrapper input[type="file"] { display: none; }
-
-        .tag-cloud {
-            display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
-            margin: 10px 0 6px 0;
-        }
-        .tag-item {
-            background: var(--tag-bg); border-radius: 30px; padding: 4px 14px;
-            font-size: 13px; color: #6a4e8a; border: 1px solid #d6c4e8;
-            display: inline-flex; align-items: center; gap: 2px;
-        }
-        .tag-item::before { content: '#'; font-weight: bold; color: #8b6bb0; margin-right: 2px; }
-        .tag-item .del-tag {
-            color: #b00; cursor: pointer; font-weight: bold; margin-left: 4px;
-            font-size: 14px; line-height: 1;
-        }
-
-        .tag-input-area {
-            margin: 4px 0 12px 0; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center;
-        }
-        .tag-input-area input {
-            width: 140px; padding: 6px 10px; border-radius: 30px; border: 1px solid #ddd;
-        }
-        .tag-input-area button {
-            background: var(--dark-blue); border: none; border-radius: 30px; padding: 6px 16px; color: white; cursor: pointer;
-        }
-
-        .dual-archives {
-            display: flex; flex-wrap: wrap; gap: 20px; margin: 20px 0;
-        }
-        .archive-box {
-            flex: 1; min-width: 200px; background: #f9f9f9; border-radius: 15px; padding: 15px;
-            border: 1px solid #e0e0e0;
-        }
-        .archive-box h4 { margin: 0 0 10px 0; display: flex; align-items: center; gap: 6px; }
-        .moe-box { border-left: 5px solid var(--dark-pink); }
-        .detail-box { border-left: 5px solid var(--dark-blue); background: #f5faff; }
-        .archive-entry {
-            background: white; border-radius: 10px; padding: 8px 12px; margin-bottom: 6px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .archive-entry .entry-text { flex:1; word-break: break-word; font-size: 14px; }
-        .archive-entry .del-entry { color: #ff4d4f; cursor: pointer; font-size: 12px; margin-left: 8px; }
-        .archive-input-row {
-            display: flex; gap: 6px; margin-top: 6px;
-        }
-        .archive-input-row input { flex:1; padding: 6px 10px; border-radius: 20px; border: 1px solid #ddd; }
-        .archive-input-row button { background: var(--dark-blue); border: none; border-radius: 20px; padding: 6px 14px; color: white; cursor: pointer; }
-
         .thought-card {
             background: white; margin-top: 15px; padding: 15px; border-radius: 12px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 4px solid var(--dark-pink);
-            position: relative;
         }
-        .display-img { max-width: 100%; border-radius: 8px; margin-top: 10px; display: block; border: 1px solid #eee; cursor: pointer; transition: 0.2s; }
-        .display-img:hover { opacity: 0.8; }
+        .display-img { max-width: 100%; border-radius: 8px; margin-top: 10px; display: block; border: 1px solid #eee; }
         .time-tag { font-size: 12px; color: #bbb; display: block; margin-bottom: 5px; }
-
-        .gacha-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center;
-            z-index: 500; backdrop-filter: blur(4px);
-        }
-        .gacha-card {
-            background: white; border-radius: 30px; padding: 30px 40px; max-width: 350px;
-            text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            animation: popIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-            position: relative;
-        }
-        @keyframes popIn {
-            0% { transform: scale(0.3); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .gacha-card img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--dark-pink); margin-bottom: 10px; }
-        .gacha-card .gacha-name { font-size: 24px; font-weight: bold; color: #333; }
-        .gacha-card .gacha-tags { margin: 8px 0; color: #777; font-size: 14px; }
-        .gacha-card .gacha-close {
-            margin-top: 16px; background: var(--dark-pink); color: white; border: none;
-            border-radius: 30px; padding: 8px 30px; cursor: pointer; font-weight: bold;
-        }
-
-        .lightbox {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center;
-            z-index: 300; cursor: zoom-out;
-        }
-        .lightbox img { max-width: 90%; max-height: 90%; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
 
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 200;
         }
-        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 300px; max-width: 90%; }
-
+        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 300px; }
+        
         .hidden { display: none !important; }
         input[type="text"], textarea { width: 100%; box-sizing: border-box; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; }
         .del-text { color: #ff4d4f; cursor: pointer; font-size: 12px; text-decoration: underline; margin-top: 10px; display: inline-block; }
+        
+        .pick-anim { animation: flash 0.2s infinite; border: 4px solid var(--dark-pink) !important; }
+        @keyframes flash { from {opacity: 1;} to {opacity: 0.5;} }
 
-        /* 图片双模式样式 */
-        .img-mode-selector {
-            display: flex; gap: 10px; margin: 8px 0;
-            align-items: center; flex-wrap: wrap;
-        }
-        .img-mode-selector label {
-            display: flex; align-items: center; gap: 4px; cursor: pointer; font-size: 14px;
-        }
-        .img-mode-selector input[type="radio"] { margin: 0; width: auto; }
-        .url-input-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-        .url-input-row input { flex:1; min-width: 150px; margin: 0; }
-        .url-input-row button { background: var(--dark-blue); border: none; border-radius: 20px; padding: 6px 16px; color: white; cursor: pointer; }
+        /* 新增：URL输入相关样式 */
+        .url-input-area { margin-top: 10px; display: none; }
+        .url-input-area input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .img-preview { max-width: 100%; max-height: 200px; margin-top: 10px; border-radius: 8px; display: none; }
     </style>
 </head>
 <body>
 
 <header>
-    <h2 style="margin:0; color:#666;">🌸 幻梦酒馆 · 双模式图片</h2>
+    <h2 style="margin:0; color:#666;">🌸 幻梦酒馆管理</h2>
     <button class="btn btn-main" onclick="openModal()">+ 新建角色</button>
-    <button class="btn btn-sub" onclick="randomPick()">🎲 随机抽卡</button>
+    <button class="btn btn-sub" onclick="randomPick()">🎲 随机选一张</button>
 </header>
 
 <div class="container">
@@ -179,73 +82,35 @@
     <div id="detailView" class="hidden">
         <button class="btn" onclick="goBack()" style="background:#eee;">← 返回列表</button>
         <div class="detail-view">
-            <!-- 头部：头像 + 名字 + 标签 -->
-            <div class="header-zone">
-                <div class="avatar-wrapper">
-                    <img id="detailAvatar" src="" class="char-avatar" style="width:100px; height:100px;" alt="头像">
-                    <label class="change-avatar-btn" onclick="document.getElementById('avatarInput').click()">换头像</label>
-                    <input type="file" id="avatarInput" accept="image/*" onchange="changeAvatar(event)">
-                </div>
-                <div id="tagCloud" class="tag-cloud"></div>
-                <h2 id="detailName" style="margin:0 0 6px 0;"></h2>
-                <div class="tag-input-area">
-                    <input type="text" id="tagInput" placeholder="添加标签 (回车)" onkeydown="if(event.key==='Enter') addTag()">
-                    <button onclick="addTag()">+ 标签</button>
-                </div>
-            </div>
-
-            <!-- 双档案 -->
-            <div class="dual-archives">
-                <div class="archive-box moe-box">
-                    <h4>✨ 萌点档案</h4>
-                    <div id="moeList"></div>
-                    <div class="archive-input-row">
-                        <input type="text" id="moeInput" placeholder="可爱小萌点...">
-                        <button onclick="addMoe()">添加</button>
-                    </div>
-                </div>
-                <div class="archive-box detail-box">
-                    <h4>📌 细节档案</h4>
-                    <div id="detailList"></div>
-                    <div class="archive-input-row">
-                        <input type="text" id="detailInput" placeholder="性格/习惯/细节...">
-                        <button onclick="addDetail()">添加</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 长记录本（含双模式图片） -->
+            <div id="detailHeader" style="text-align: center;"></div>
             <div style="background:#f9f9f9; padding:15px; border-radius:15px; margin:20px 0;">
-                <h4 style="margin:0 0 10px 0;">📝 长记录本</h4>
+                <h4 style="margin:0 0 10px 0;">记录新感想</h4>
                 <textarea id="inpText" placeholder="说点什么..."></textarea>
                 
-                <!-- 图片双模式选择 -->
-                <div class="img-mode-selector">
-                    <label><input type="radio" name="imgMode" value="base64" checked> 上传图片 (Base64)</label>
-                    <label><input type="radio" name="imgMode" value="url"> 输入图片 URL</label>
+                <!-- 图片上传区域：切换模式 -->
+                <div style="margin: 10px 0;">
+                    <label><input type="radio" name="imgMode" value="file" checked onchange="toggleImgMode()"> 上传图片</label>
+                    <label><input type="radio" name="imgMode" value="url" onchange="toggleImgMode()"> 输入图片URL</label>
                 </div>
-                
-                <!-- Base64 上传 -->
-                <div id="base64UploadArea">
-                    <input type="file" id="inpFile" accept="image/*" onchange="previewImage(this)">
+
+                <!-- 文件上传模式 -->
+                <div id="fileUploadArea">
+                    上传图片: <input type="file" id="inpFile" accept="image/*" onchange="previewImage(this)">
                     <div id="previewContainer" style="margin-top:10px; display:none;">
                         <img id="previewImg" style="max-width:100%; max-height:200px; border-radius:8px;">
                         <button onclick="clearImage()" style="background:#ff4d4f; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; margin-top:5px;">移除</button>
                     </div>
                 </div>
-                
-                <!-- URL 输入 -->
-                <div id="urlInputArea" style="display:none; margin-top:8px;">
-                    <div class="url-input-row">
-                        <input type="text" id="urlInput" placeholder="粘贴图床链接 (https://...)" oninput="previewUrl()">
-                        <button onclick="previewUrl()">预览</button>
-                    </div>
-                    <div id="urlPreviewContainer" style="margin-top:10px; display:none;">
-                        <img id="urlPreviewImg" style="max-width:100%; max-height:200px; border-radius:8px;">
-                        <button onclick="clearUrl()" style="background:#ff4d4f; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; margin-top:5px;">移除</button>
+
+                <!-- URL模式 -->
+                <div id="urlUploadArea" class="url-input-area">
+                    图片链接: <input type="text" id="urlInput" placeholder="https://example.com/image.jpg" oninput="previewUrl()">
+                    <div id="urlPreviewContainer" style="margin-top:10px;">
+                        <img id="urlPreviewImg" class="img-preview" src="" alt="URL预览">
+                        <button onclick="clearUrl()" style="background:#ff4d4f; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; margin-top:5px; display:none;">移除</button>
                     </div>
                 </div>
-                
+
                 <button class="btn btn-main" style="width:100%; margin-top:10px;" onclick="saveThought()">保存到记录本</button>
             </div>
             <div id="thoughtList"></div>
@@ -253,7 +118,6 @@
     </div>
 </div>
 
-<!-- 新建弹窗 -->
 <div id="modal" class="modal">
     <div class="modal-content">
         <h3>新增角色</h3>
@@ -269,27 +133,10 @@
     </div>
 </div>
 
-<!-- 抽卡弹窗 -->
-<div id="gachaOverlay" class="gacha-overlay">
-    <div class="gacha-card">
-        <img id="gachaAvatar" src="" alt="avatar">
-        <div class="gacha-name" id="gachaName">?</div>
-        <div class="gacha-tags" id="gachaTags"></div>
-        <button class="gacha-close" onclick="closeGacha()">✨ 收下这份缘分</button>
-    </div>
-</div>
-
-<!-- lightbox -->
-<div id="lightbox" class="lightbox" onclick="closeLightbox()">
-    <img id="lightboxImg" src="" alt="点击关闭">
-</div>
-
 <script>
     let db;
     const request = indexedDB.open("TavernData", 1);
-    request.onupgradeneeded = e => {
-        e.target.result.createObjectStore("chars", { keyPath: "id" });
-    };
+    request.onupgradeneeded = e => e.target.result.createObjectStore("chars", { keyPath: "id" });
     request.onsuccess = e => { db = e.target.result; renderHome(); };
 
     const fileToData = file => new Promise(res => {
@@ -299,25 +146,22 @@
     });
 
     let curId = null;
-    let currentImageData = null;
-    let currentUrlData = null; // 存储当前 URL
+    let currentImageData = null; 
+    let currentUrlData = null;
 
     // 切换图片模式
-    document.querySelectorAll('input[name="imgMode"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (this.value === 'base64') {
-                document.getElementById('base64UploadArea').style.display = 'block';
-                document.getElementById('urlInputArea').style.display = 'none';
-                // 清理 URL 预览
-                clearUrl();
-            } else {
-                document.getElementById('base64UploadArea').style.display = 'none';
-                document.getElementById('urlInputArea').style.display = 'block';
-                // 清理 Base64 预览
-                clearImage();
-            }
-        });
-    });
+    function toggleImgMode() {
+        const mode = document.querySelector('input[name="imgMode"]:checked').value;
+        if (mode === 'file') {
+            document.getElementById('fileUploadArea').style.display = 'block';
+            document.getElementById('urlUploadArea').style.display = 'none';
+            clearUrl();
+        } else {
+            document.getElementById('fileUploadArea').style.display = 'none';
+            document.getElementById('urlUploadArea').style.display = 'block';
+            clearImage();
+        }
+    }
 
     async function addChar() {
         const name = document.getElementById('newName').value;
@@ -325,7 +169,7 @@
         if(!name) return alert("请填写名字");
 
         const avatar = file ? await fileToData(file) : "";
-        const newChar = { id: Date.now(), name, avatar, thoughts: [], tags: [], moes: [], details: [] };
+        const newChar = { id: Date.now(), name, avatar, thoughts: [] };
 
         const tx = db.transaction("chars", "readwrite");
         tx.objectStore("chars").add(newChar);
@@ -368,166 +212,32 @@
             const char = e.target.result;
             document.getElementById('homeView').classList.add('hidden');
             document.getElementById('detailView').classList.remove('hidden');
-            document.getElementById('detailAvatar').src = char.avatar || 'https://via.placeholder.com/80';
-            document.getElementById('detailName').textContent = char.name;
-            renderTags(char.tags || []);
-            renderMoes(char.moes || []);
-            renderDetails(char.details || []);
-            renderThoughts(char.thoughts || []);
-            document.getElementById('avatarInput').onchange = (ev) => changeAvatar(ev, char.id);
+            document.getElementById('detailHeader').innerHTML = `
+                <img src="${char.avatar || 'https://via.placeholder.com/80'}" class="char-avatar" style="width:100px; height:100px;" alt="${char.name}">
+                <h2>${char.name}</h2>
+            `;
+            renderThoughts(char.thoughts);
+            // 重置图片模式
+            document.querySelector('input[name="imgMode"][value="file"]').checked = true;
+            toggleImgMode();
+            clearImage();
+            clearUrl();
         };
     }
 
-    /* 标签系统 */
-    function renderTags(tags) {
-        const container = document.getElementById('tagCloud');
-        if (!tags || tags.length === 0) {
-            container.innerHTML = '<span style="color:#bbb; font-size:13px;"># 无标签</span>';
-            return;
+    function previewAvatar(input) {
+        const container = document.getElementById('avatarPreviewContainer');
+        const img = document.getElementById('avatarPreviewImg');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                img.src = e.target.result;
+                container.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            container.style.display = 'none';
         }
-        container.innerHTML = tags.map(t => 
-            `<span class="tag-item">${t} <span class="del-tag" onclick="deleteTag('${t}')">×</span></span>`
-        ).join('');
-    }
-
-    async function addTag() {
-        const input = document.getElementById('tagInput');
-        const val = input.value.trim();
-        if (!val) return;
-        const tx = db.transaction("chars", "readwrite");
-        const store = tx.objectStore("chars");
-        store.get(curId).onsuccess = e => {
-            const char = e.target.result;
-            if (!char.tags) char.tags = [];
-            if (char.tags.includes(val)) { alert('标签已存在'); return; }
-            char.tags.push(val);
-            store.put(char);
-            tx.oncomplete = () => {
-                input.value = '';
-                renderTags(char.tags);
-            };
-        };
-    }
-
-    async function deleteTag(tag) {
-        if (!confirm(`移除标签 #${tag} ？`)) return;
-        const tx = db.transaction("chars", "readwrite");
-        const store = tx.objectStore("chars");
-        store.get(curId).onsuccess = e => {
-            const char = e.target.result;
-            char.tags = (char.tags || []).filter(t => t !== tag);
-            store.put(char);
-            tx.oncomplete = () => renderTags(char.tags);
-        };
-    }
-
-    /* 萌点档案 */
-    function renderMoes(moes) {
-        const container = document.getElementById('moeList');
-        if (!moes || moes.length === 0) {
-            container.innerHTML = '<p style="color:#ccc; font-size:13px; margin:6px 0;">✨ 暂无萌点</p>';
-            return;
-        }
-        container.innerHTML = moes.map((m, idx) => `
-            <div class="archive-entry">
-                <span class="entry-text">${m}</span>
-                <span class="del-entry" onclick="deleteMoe(${idx})">删除</span>
-            </div>
-        `).join('');
-    }
-
-    async function addMoe() {
-        const input = document.getElementById('moeInput');
-        const val = input.value.trim();
-        if (!val) return;
-        const tx = db.transaction("chars", "readwrite");
-        const store = tx.objectStore("chars");
-        store.get(curId).onsuccess = e => {
-            const char = e.target.result;
-            if (!char.moes) char.moes = [];
-            char.moes.push(val);
-            store.put(char);
-            tx.oncomplete = () => {
-                input.value = '';
-                renderMoes(char.moes);
-            };
-        };
-    }
-
-    async function deleteMoe(index) {
-        if (!confirm('删除这条萌点？')) return;
-        const tx = db.transaction("chars", "readwrite");
-        const store = tx.objectStore("chars");
-        store.get(curId).onsuccess = e => {
-            const char = e.target.result;
-            char.moes = (char.moes || []).filter((_, i) => i !== index);
-            store.put(char);
-            tx.oncomplete = () => renderMoes(char.moes);
-        };
-    }
-
-    /* 细节档案 */
-    function renderDetails(details) {
-        const container = document.getElementById('detailList');
-        if (!details || details.length === 0) {
-            container.innerHTML = '<p style="color:#ccc; font-size:13px; margin:6px 0;">📌 暂无细节</p>';
-            return;
-        }
-        container.innerHTML = details.map((d, idx) => `
-            <div class="archive-entry" style="border-left:3px solid var(--dark-blue); background:#f0f7ff;">
-                <span class="entry-text">${d}</span>
-                <span class="del-entry" onclick="deleteDetail(${idx})">删除</span>
-            </div>
-        `).join('');
-    }
-
-    async function addDetail() {
-        const input = document.getElementById('detailInput');
-        const val = input.value.trim();
-        if (!val) return;
-        const tx = db.transaction("chars", "readwrite");
-        const store = tx.objectStore("chars");
-        store.get(curId).onsuccess = e => {
-            const char = e.target.result;
-            if (!char.details) char.details = [];
-            char.details.push(val);
-            store.put(char);
-            tx.oncomplete = () => {
-                input.value = '';
-                renderDetails(char.details);
-            };
-        };
-    }
-
-    async function deleteDetail(index) {
-        if (!confirm('删除这条细节？')) return;
-        const tx = db.transaction("chars", "readwrite");
-        const store = tx.objectStore("chars");
-        store.get(curId).onsuccess = e => {
-            const char = e.target.result;
-            char.details = (char.details || []).filter((_, i) => i !== index);
-            store.put(char);
-            tx.oncomplete = () => renderDetails(char.details);
-        };
-    }
-
-    /* 长记录系统 - 双模式图片 */
-    async function changeAvatar(event, charId) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const dataUrl = await fileToData(file);
-        const tx = db.transaction("chars", "readwrite");
-        const store = tx.objectStore("chars");
-        store.get(charId).onsuccess = e => {
-            const char = e.target.result;
-            char.avatar = dataUrl;
-            store.put(char);
-            tx.oncomplete = () => {
-                showDetail(charId);
-                renderHome();
-                document.getElementById('avatarInput').value = '';
-            };
-        };
     }
 
     function previewImage(input) {
@@ -539,7 +249,7 @@
                 img.src = e.target.result;
                 container.style.display = 'block';
                 currentImageData = e.target.result;
-                currentUrlData = null; // 清除 URL
+                currentUrlData = null;
             };
             reader.readAsDataURL(input.files[0]);
         } else {
@@ -557,24 +267,28 @@
 
     function previewUrl() {
         const input = document.getElementById('urlInput');
-        const container = document.getElementById('urlPreviewContainer');
         const img = document.getElementById('urlPreviewImg');
+        const btn = document.querySelector('#urlPreviewContainer button');
         const url = input.value.trim();
         if (url) {
             img.src = url;
-            container.style.display = 'block';
+            img.style.display = 'block';
+            btn.style.display = 'inline-block';
             currentUrlData = url;
-            currentImageData = null; // 清除 Base64
+            currentImageData = null;
         } else {
-            container.style.display = 'none';
+            img.style.display = 'none';
+            btn.style.display = 'none';
             currentUrlData = null;
         }
     }
 
     function clearUrl() {
         document.getElementById('urlInput').value = '';
-        document.getElementById('urlPreviewContainer').style.display = 'none';
-        document.getElementById('urlPreviewImg').src = '';
+        const img = document.getElementById('urlPreviewImg');
+        const btn = document.querySelector('#urlPreviewContainer button');
+        img.style.display = 'none';
+        btn.style.display = 'none';
         currentUrlData = null;
     }
 
@@ -582,8 +296,7 @@
         const text = document.getElementById('inpText').value;
         const mode = document.querySelector('input[name="imgMode"]:checked').value;
         let imgData = "";
-        
-        if (mode === 'base64') {
+        if (mode === 'file') {
             imgData = currentImageData || "";
         } else {
             imgData = currentUrlData || "";
@@ -593,14 +306,13 @@
 
         const tx = db.transaction("chars", "readwrite");
         const store = tx.objectStore("chars");
+        
         store.get(curId).onsuccess = e => {
             const char = e.target.result;
-            if (!char.thoughts) char.thoughts = [];
             char.thoughts.unshift({
                 tid: Date.now(),
                 text: text,
                 img: imgData,
-                imgMode: mode, // 记录图片模式
                 time: new Date().toLocaleString()
             });
             store.put(char);
@@ -615,13 +327,13 @@
 
     function renderThoughts(thoughts) {
         const list = document.getElementById('thoughtList');
-        list.innerHTML = thoughts.length ? "" : "<p style='text-align:center;color:#ccc;'>暂无长记录</p>";
+        list.innerHTML = thoughts.length ? "" : "<p style='text-align:center;color:#ccc;'>暂无记录</p>";
         thoughts.forEach(t => {
             const div = document.createElement('div');
             div.className = 'thought-card';
             let imgHtml = '';
             if (t.img && t.img.length > 0) {
-                imgHtml = `<img src="${t.img}" class="display-img" alt="上传图片" onclick="openLightbox('${t.img}')">`;
+                imgHtml = `<img src="${t.img}" class="display-img" alt="上传图片">`;
             }
             div.innerHTML = `
                 <small class="time-tag">${t.time}</small>
@@ -634,12 +346,12 @@
     }
 
     function delThought(tid) {
-        if(!confirm("确定删除这条长记录？")) return;
+        if(!confirm("确定删除这条记录？")) return;
         const tx = db.transaction("chars", "readwrite");
         const store = tx.objectStore("chars");
         store.get(curId).onsuccess = e => {
             const char = e.target.result;
-            char.thoughts = (char.thoughts || []).filter(x => x.tid !== tid);
+            char.thoughts = char.thoughts.filter(x => x.tid !== tid);
             store.put(char);
             tx.oncomplete = () => renderThoughts(char.thoughts);
         };
@@ -656,51 +368,36 @@
     function randomPick() {
         const cards = document.querySelectorAll('.char-card');
         if(cards.length < 1) return alert("酒馆里还没人");
-        const tx = db.transaction("chars", "readonly");
-        const store = tx.objectStore("chars");
-        const allChars = [];
-        store.openCursor().onsuccess = e => {
-            const cursor = e.target.result;
-            if (cursor) {
-                allChars.push(cursor.value);
-                cursor.continue();
-            } else {
-                if (allChars.length === 0) return alert("没有角色");
-                const picked = allChars[Math.floor(Math.random() * allChars.length)];
-                showGacha(picked);
+        
+        cards.forEach(c => c.classList.remove('pick-anim'));
+        
+        let i = 0;
+        let selectedIndex = 0;
+        const timer = setInterval(() => {
+            cards.forEach(c => c.classList.remove('pick-anim'));
+            
+            const r = Math.floor(Math.random() * cards.length);
+            selectedIndex = r;
+            cards[r].classList.add('pick-anim');
+            
+            if(i++ > 10) {
+                clearInterval(timer);
+                setTimeout(() => {
+                    cards.forEach(c => c.classList.remove('pick-anim'));
+                    alert("✨ 命运选择了这位角色！");
+                    cards[selectedIndex].click();
+                }, 300);
             }
-        };
+        }, 100);
     }
 
-    function showGacha(char) {
-        const overlay = document.getElementById('gachaOverlay');
-        document.getElementById('gachaAvatar').src = char.avatar || 'https://via.placeholder.com/80';
-        document.getElementById('gachaName').textContent = char.name;
-        const tags = (char.tags || []).map(t => '#' + t).join(' ');
-        document.getElementById('gachaTags').textContent = tags || '✨ 无标签';
-        overlay.style.display = 'flex';
+    function openModal() { document.getElementById('modal').style.display='flex'; }
+    function closeModal() { document.getElementById('modal').style.display='none'; }
+    function goBack() { 
+        document.getElementById('homeView').classList.remove('hidden'); 
+        document.getElementById('detailView').classList.add('hidden');
     }
+</script>
 
-    function closeGacha() {
-        document.getElementById('gachaOverlay').style.display = 'none';
-    }
-
-    function openLightbox(src) {
-        document.getElementById('lightboxImg').src = src;
-        document.getElementById('lightbox').style.display = 'flex';
-    }
-    function closeLightbox() { document.getElementById('lightbox').style.display = 'none'; }
-
-    function previewAvatar(input) {
-        const container = document.getElementById('avatarPreviewContainer');
-        const img = document.getElementById('avatarPreviewImg');
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                img.src = e.target.result;
-                container.style.display = 'block';
-            };
-            reader.readAsDataURL(input.files[0]);
-        } else { container.style.display = 'none'; }
-    }
-
+</body>
+</html>
